@@ -5,3 +5,9 @@ export { default as WalletModal } from './WalletModal';
 export { default as Web3ReactManager } from './Web3ReactManager';
 export { default as CustomModal } from './CustomModal';
 export { default as AccountDetails } from './AccountDetails';
+export { default as NumericalInput } from './NumericalInput';
+export {
+  default as TransactionConfirmationModal,
+  ConfirmationModalContent,
+  TransactionErrorContent,
+} from './TransactionConfirmationModal';

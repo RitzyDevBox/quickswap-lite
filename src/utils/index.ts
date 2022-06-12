@@ -2,7 +2,16 @@ import { getAddress } from '@ethersproject/address';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import { AddressZero } from '@ethersproject/constants';
-import { ChainId } from '@uniswap/sdk';
+import {
+  ChainId,
+  CurrencyAmount,
+  JSBI,
+  Percent,
+  Token,
+  WETH,
+} from '@uniswap/sdk';
+import { BigNumber } from '@ethersproject/bignumber';
+import tokenData from 'constants/tokens.json';
 
 export { default as addMaticToMetamask } from './addMaticToMetamask';
 
@@ -91,4 +100,51 @@ export function getEtherscanLink(
       return `${prefix}/address/${data}`;
     }
   }
+}
+
+export function calculateGasMargin(value: BigNumber): BigNumber {
+  return value
+    .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
+    .div(BigNumber.from(10000));
+}
+
+export function basisPointsToPercent(num: number): Percent {
+  return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000));
+}
+
+export function formatTokenAmount(amount?: CurrencyAmount, digits = 3) {
+  if (!amount) return '-';
+  const amountStr = amount.toExact();
+  if (Math.abs(Number(amountStr)) > 1) {
+    return Number(amountStr).toLocaleString();
+  }
+  return amount.toSignificant(digits);
+}
+
+export const escapeRegExp = (str: string) => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
+export function getChainId(): ChainId {
+  if (process.env.REACT_APP_CHAIN_ID === '137') {
+    return ChainId.MATIC;
+  }
+
+  return ChainId.MUMBAI;
+}
+
+export function returnTokenFromKey(key: string): Token {
+  const chainId = getChainId();
+  if (key === 'MATIC') return WETH[chainId];
+  const tokenIndex = Object.keys(tokenData).findIndex(
+    (tokenKey) => tokenKey === key,
+  );
+  const token = Object.values(tokenData)[tokenIndex];
+  return new Token(
+    chainId,
+    getAddress(token.address),
+    token.decimals,
+    token.symbol,
+    token.name,
+  );
 }

@@ -7,6 +7,8 @@ import ENS_ABI from 'constants/abis/ens-registrar.json';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from 'constants/multicall';
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
+import QUICKConversionABI from 'constants/abis/quick-conversion.json';
+import ERC20_ABI from 'constants/abis/erc20';
 
 function useContract(
   address: string | undefined,
@@ -65,4 +67,19 @@ export function useMulticallContract(): Contract | null {
     MULTICALL_ABI,
     false,
   );
+}
+
+export function useQUICKConversionContract(): Contract | null {
+  return useContract(
+    process.env.REACT_APP_QUICK_CONVERSION_CONTRACT_ADDRESS,
+    QUICKConversionABI,
+    true,
+  );
+}
+
+export function useTokenContract(
+  tokenAddress?: string,
+  withSignerIfPossible?: boolean,
+): Contract | null {
+  return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible);
 }
